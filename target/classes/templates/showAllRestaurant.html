@@ -1,0 +1,128 @@
+
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html"
+      xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:c="http://java.sun.com/xml/ns/javaee">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Информация о ресторанах</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(to bottom, rgba(173, 216, 230, 0.5), white, rgba(255, 165, 0, 0.5));
+    }
+    table {
+      border-collapse: collapse;
+      width: 80%;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+    th {
+      background-color: #ff8c00;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+    button {
+      background-color: #FF8C00;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    header {
+      background-color: white;
+      padding: 20px 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    header a {
+      color: #000080; /* Цвет ссылок в шапке */
+      text-decoration: none;
+      margin: 0 10px;
+      text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
+    }
+
+    header img {
+      max-width: 150px;
+      height: auto;
+      margin-left: 25px;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div>
+    <img src="liga.png" alt="Логотип" />
+  </div>
+  <div>
+    <a th:href="@{/saveAllReport}">Архив отчетов</a>
+
+    <a href="/">Главная страница</a>
+    <a href="/login">Выход</a>
+  </div>
+</header>
+
+<br><br>
+
+<h3>Все рестораны</h3>
+
+
+  <table>
+  <thead>
+  <tr>
+    <th>Название ресторана</th>
+    <th>Дата расчета</th>
+    <th>Расходы при открытии ресторана</th>
+    <th>Расчет потенциальной прибыльности нового ресторана в месяц</th>
+    <th>Расчет времени окупаемости ресторана в месяцах</th>
+    <th>Расчет времени окупаемости ресторана в годах</th>
+    <th>Опции</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="allRestaurantInfo : ${allRestaurantInfo}">
+    <td th:text="${allRestaurantInfo.restaurantName}"></td>
+    <td th:text="${allRestaurantInfo.formatDate(allRestaurantInfo.dateCalculation)}"></td>
+    <td th:text="${allRestaurantInfo.costsOpening(allRestaurantInfo.costRoom, allRestaurantInfo.costRenovation, allRestaurantInfo.costEquipment, allRestaurantInfo.license, allRestaurantInfo.abvertising, allRestaurantInfo.costWorkers, allRestaurantInfo.taxes, allRestaurantInfo.other)}"></td>
+    <td th:text="${allRestaurantInfo.profit(allRestaurantInfo.futureProceed, allRestaurantInfo.costsPersonnel, allRestaurantInfo.costsProducts, allRestaurantInfo.otherCosts, allRestaurantInfo.costRent)}"></td>
+    <td th:text="${allRestaurantInfo.timePaybackMounth(allRestaurantInfo.costRoom, allRestaurantInfo.costRenovation, allRestaurantInfo.costEquipment, allRestaurantInfo.license, allRestaurantInfo.abvertising, allRestaurantInfo.costWorkers, allRestaurantInfo.taxes, allRestaurantInfo.other, allRestaurantInfo.futureProceed, allRestaurantInfo.operating)}"></td>
+    <td th:text="${allRestaurantInfo.timePaybackYear(allRestaurantInfo.costRoom, allRestaurantInfo.costRenovation, allRestaurantInfo.costEquipment, allRestaurantInfo.license, allRestaurantInfo.abvertising, allRestaurantInfo.costWorkers, allRestaurantInfo.taxes, allRestaurantInfo.other, allRestaurantInfo.futureProceed, allRestaurantInfo.operating)}"></td>
+    <td>
+      <a th:href="@{/show(showId=${allRestaurantInfo.restaurantId})}">
+        <strong>Посмотреть</strong>
+      </a>
+      <a th:href="@{/saveReport(restInfoId=*{allRestaurantInfo.getRestaurantId()})}">
+        <strong>Сохранить отчет</strong>
+      </a>
+      <a th:href="@{/delete(deleteId=${allRestaurantInfo.restaurantId})}"
+         onclick="if (!(confirm('Вы действительно хотите удалить данные?'))) return false">
+        <strong>Удалить</strong>
+      </a>
+
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+</body>
+</html>
+

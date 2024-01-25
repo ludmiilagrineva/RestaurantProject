@@ -1,0 +1,146 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор прибыльности</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(to bottom, rgba(173, 216, 230, 0.5), white, rgba(255, 165, 0, 0.5));
+        }
+        header {
+            background-color: white;
+            padding: 20px 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        header a {
+            color: #000080; /* Цвет ссылок в шапке */
+            text-decoration: none;
+            margin: 0 10px;
+            text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
+        }
+
+        header img {
+            max-width: 150px;
+            height: auto;
+            margin-left: 25px;
+        }
+        .content {
+            width: 80%;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .content h3, .content span {
+            color: #555;
+            margin: 10px 0;
+        }
+        button {
+            background-color: #FF8C00;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div>
+        <img src="liga.png" alt="Логотип"/>
+    </div>
+    <div>
+        <a href="/">Главная страница</a>
+        <a href="/login">Выход</a>
+    </div>
+</header>
+
+<div class="content">
+    <h3>Название ресторана</h3>
+    <span th:text="${restInfoFromDb.restaurantName}"></span>
+
+    <h4>Дата расчета</h4>
+    <span th:text="${restInfoFromDb.formatDate(restInfoFromDb.dateCalculation)}"></span>
+
+    <h4>Затраты при открытии</h4>
+    <span th:text="${restInfoFromDb.costsOpening(restInfoFromDb.costRoom, restInfoFromDb.costRenovation, restInfoFromDb.costEquipment, restInfoFromDb.license, restInfoFromDb.abvertising, restInfoFromDb.costWorkers, restInfoFromDb.taxes, restInfoFromDb.other)}"></span>
+
+    <h4>Расчет потенциальной прибыльности</h4>
+    <span th:text="${restInfoFromDb.profit(restInfoFromDb.futureProceed, restInfoFromDb.costsPersonnel, restInfoFromDb.costsProducts, restInfoFromDb.otherCosts, restInfoFromDb.costRent)}"></span>
+
+    <h4>Расчет времени окупаемости (в месяцах)</h4>
+    <span th:text="${restInfoFromDb.timePaybackMounth(restInfoFromDb.costRoom, restInfoFromDb.costRenovation, restInfoFromDb.costEquipment, restInfoFromDb.license, restInfoFromDb.abvertising, restInfoFromDb.costWorkers, restInfoFromDb.taxes, restInfoFromDb.other, restInfoFromDb.futureProceed, restInfoFromDb.operating)}"></span>
+
+    <h4>Расчет времени окупаемости (в годах)</h4>
+    <span th:text="${restInfoFromDb.timePaybackYear(restInfoFromDb.costRoom, restInfoFromDb.costRenovation, restInfoFromDb.costEquipment, restInfoFromDb.license, restInfoFromDb.abvertising, restInfoFromDb.costWorkers, restInfoFromDb.taxes, restInfoFromDb.other, restInfoFromDb.futureProceed, restInfoFromDb.operating)}"></span>
+
+    <h3>При расчете пользователем были введены следующие данные:</h3>
+    <h4>Тип недвижимости</h4>
+    <span th:text="${restInfoFromDb.showTypeProperty(restInfoFromDb.costRent,restInfoFromDb.costBuy)}"></span>
+
+    <h4>Стоимость помещения</h4>
+    <span th:text="${restInfoFromDb.costRoom}"></span>
+
+    <h4>Затраты на материалы для ремонта помещения</h4>
+    <span th:text="${restInfoFromDb.costRenovation}"></span>
+
+    <h4>Оборудование и мебель</h4>
+    <span th:text="${restInfoFromDb.costEquipment}"></span>
+
+    <h4>Лицензии</h4>
+    <span th:text="${restInfoFromDb.license}"></span>
+
+    <h4>Реклама при открытии</h4>
+    <span th:text="${restInfoFromDb.abvertising}"></span>
+
+    <h4>Затраты на рабочих, делающих ремонт</h4>
+    <span th:text="${restInfoFromDb.costWorkers}"></span>
+
+    <h4>Налоги</h4>
+    <span th:text="${restInfoFromDb.taxes}"></span>
+
+    <h4>Прочее</h4>
+    <span th:text="${restInfoFromDb.other}"></span>
+
+    <h4>Планируемый средний чек</h4>
+    <span th:text="${restInfoFromDb.averageBill}"></span>
+
+    <h4>Средняя посещаемость ресторана (человек в месяц)</h4>
+    <span th:text="${restInfoFromDb.averageAttendance}"></span>
+
+    <h4>Затраты на персонал</h4>
+    <span th:text="${restInfoFromDb.costsPersonnel}"></span>
+
+    <h4>Затраты на продукты</h4>
+    <span th:text="${restInfoFromDb.costsProducts}"></span>
+
+    <h4>Иные затраты(коммуналка, охрана, транспорт и пр.)</h4>
+    <span th:text="${restInfoFromDb.otherCosts}"></span>
+
+
+</div>
+
+<a th:href="@{/saveReport(restInfoId=*{restInfoFromDb.getRestaurantId()})}" class="btn btn-warning">
+    <button type="submit">Сохранить отчет</button>
+</a>
+</body>
+</html>
+

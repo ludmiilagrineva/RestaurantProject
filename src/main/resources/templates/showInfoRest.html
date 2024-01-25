@@ -1,0 +1,189 @@
+
+
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор прибыльности</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(to bottom, rgba(173, 216, 230, 0.5), white, rgba(255, 165, 0, 0.5));
+        }
+        header {
+            background-color: white;
+            padding: 20px 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        header a {
+            color: #000080; /* Цвет ссылок в шапке */
+            text-decoration: none;
+            margin: 0 10px;
+            text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
+        }
+
+        header img {
+            max-width: 150px;
+            height: auto;
+            margin-left: 25px;
+
+        }
+
+        span {
+            color: #555;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        button {
+            grid-column: span 2;
+            background-color: 	#FF8C00;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        table {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table p {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        h1 {
+            color: #333;
+            padding: 12px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+<body>
+
+<header>
+
+    <div>
+        <img src="liga.png" alt="Логотип" />
+    </div>
+    <div>
+        <a href="/allRestaurantInfo">Назад</a>
+        <a href="/login">Выход</a>
+    </div>
+</header>
+
+<br><br>
+
+
+
+<h1>Результаты расчета прибыльности ресторана</h1>
+
+<table>
+    <tr>
+        <td>Название ресторана:</td>
+        <td><span th:text="${ri.restaurantName}"/></td>
+    </tr>
+    <tr>
+        <td>Дата расчета:</td>
+        <td><span th:text="${ri.formatDate(ri.dateCalculation)}"/></td>
+    </tr>
+    <tr>
+        <td>Затраты при открытии:</td>
+        <td><span th:text="${ri.costsOpening(ri.costRoom, ri.costRenovation, ri.costEquipment, ri.license, ri.abvertising, ri.costWorkers, ri.taxes, ri.other)}"/></span></td>
+    </tr>
+    <tr>
+        <td>Расчет потенциальной прибыльности:</td>
+        <td><span th:text="${ri.profit(ri.futureProceed, ri.costsPersonnel, ri.costsProducts, ri.otherCosts, ri.costRent)}"/></span></td>
+    </tr>
+    <tr>
+        <td>Расчет времени окупаемости (в месяцах):</td>
+        <td><span th:text="${ri.timePaybackMounth(ri.costRoom, ri.costRenovation, ri.costEquipment, ri.license, ri.abvertising, ri.costWorkers, ri.taxes, ri.other, ri.futureProceed, ri.operating)}"/></span></td>
+    </tr>
+    <tr>
+        <td>Расчет времени окупаемости (в годах):</td>
+        <td><span th:text="${ri.timePaybackYear(ri.costRoom, ri.costRenovation, ri.costEquipment, ri.license, ri.abvertising, ri.costWorkers, ri.taxes, ri.other, ri.futureProceed, ri.operating)}"/></span></td>
+    </tr>
+</table>
+
+<h1>Были введены следующие данные:</h1>
+
+<table>
+    <tr>
+        <td>Тип недвижимости:</td>
+        <td><span th:text="${ri.showTypeProperty(ri.costRent, ri.costBuy)}"/></span></td>
+    </tr>
+    <tr>
+        <td>Стоимость помещения:</td>
+        <td><span th:text="${ri.costRoom}"/></span></td>
+    </tr>
+    <tr>
+        <td>Затраты на материалы для ремонта помещения:</td>
+        <td><span th:text="${ri.costRenovation}"/></span></td>
+    </tr>
+    <tr>
+        <td>Оборудование и мебель:</td>
+        <td><span th:text="${ri.costEquipment}"/></span></td>
+    </tr>
+    <tr>
+        <td>Лицензии:</td>
+        <td><span th:text="${ri.license}"/></span></td>
+    </tr>
+    <tr>
+        <td>Реклама при открытии:</td>
+        <td><span th:text="${ri.abvertising}"/></span></td>
+    </tr>
+    <tr>
+        <td>Затраты на рабочих, делающих ремонт:</td>
+        <td><span th:text="${ri.costWorkers}"/></span></td>
+    </tr>
+    <tr>
+        <td>Налоги:</td>
+        <td><span th:text="${ri.taxes}"/></span></td>
+    </tr>
+    <tr>
+        <td>Прочее:</td>
+        <td><span th:text="${ri.other}"/></span></td>
+    </tr>
+    <tr>
+        <td>Планируемый средний чек:</td>
+        <td><span th:text="${ri.averageBill}"/></span></td>
+    </tr>
+    <tr>
+        <td>Средняя посещаемость ресторана (человек в месяц):</td>
+        <td><span th:text="${ri.averageAttendance}"/></span></td>
+    </tr>
+    <tr>
+        <td>Затраты на персонал:</td>
+        <td><span th:text="${ri.costsPersonnel}"/></span></td>
+    </tr>
+    <tr>
+        <td>Затраты на продукты:</td>
+        <td><span th:text="${ri.costsProducts}"/></span></td>
+    </tr>
+    <tr>
+        <td>Иные затраты (коммуналка, охрана, транспорт и пр.):</td>
+        <td><span th:text="${ri.otherCosts}"/></span></td>
+    </tr>
+</table>
+
+</body>
+
+</html>

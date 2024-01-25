@@ -1,0 +1,310 @@
+
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор прибыльности</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(to bottom, rgba(173, 216, 230, 0.5), white, rgba(255, 165, 0, 0.5));
+        }
+        header {
+            background-color: white;
+            padding: 20px 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        header a {
+            color: #000080; /* Цвет ссылок в шапке */
+            text-decoration: none;
+            margin: 0 10px;
+            text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
+        }
+
+        header img {
+            max-width: 150px;
+            height: auto;
+            margin-left: 25px;
+
+        }
+        h1 {
+            color: #333;
+            padding: 12px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.8);
+        }
+        p {
+            color: #555;
+        }
+        form {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+        }
+        .rent-fields, .buy-fields {
+            grid-column: span 1;
+            display: none;
+        }
+        button {
+            grid-column: span 3;
+            background-color: #FF8C00;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .restaurant-name-box {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            width: 47Ск%;
+        }
+        .column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 50px;
+
+
+    </style>
+</head>
+<body>
+<header>
+
+    <div>
+        <img src="liga.png" alt="Логотип" />
+    </div>
+    <div>
+        <a href="/allRestaurantInfo" th:if="${#request.isUserInRole('ADMIN')}">Предыдущие расчеты</a>
+        <a href="/login">Выход</a>
+    </div>
+</header>
+
+<br><br>
+
+
+
+<form action="#" th:action="@{/saveRest}" th:object="${restaur}" method="post"  style="display: flex; flex-direction: column; align-items: center;">
+
+    <div class="restaurant-name-box">
+        <h1>Название ресторана</h1>
+
+        <input type="text" th:required="required" th:field="*{restaurantName}">
+
+    </div>
+
+    <div style="display: flex; justify-content: space-around; width: 60%; flex-basis: 40%;">
+        <div class="column" style="margin-right: 20px">
+
+            <h1>Расчет при открытии ресторана</h1>
+            <br>
+            <p for="propertyType">Тип недвижимости:</p>
+            <select id="propertyType" name="propertyType" onchange="toggleFields()">
+                <option value="a">Выберите тип недвижимости</option>
+                <option value="rent">Аренда</option>
+                <option value="buy">Покупка</option>
+                <option value="self">Собственное помещение</option>
+            </select>
+
+            <div class="rent-fields">
+
+                <p>Стоимость аренды в месяц</p>
+                <input type="number" th:field="*{costRent}" oninput="calculateCostRent(); showOperating();" placeholder="Стоимость аренды в месяц">
+                <p>Количество месяцев аренды</p>
+                <input type="number" th:field="*{periodRenta}" oninput="calculateCostRent()" placeholder="Количество месяцев аренды">
+
+            </div>
+
+            <div class="buy-fields">
+                <p>Площадь помещения м2</p>
+                <input type="number" th:field="*{roomArea}" oninput="calculateCostBuy()" placeholder="Площадь кв.м.">
+                <p>Стоимость покупки за м2</p>
+                <input type="number" th:field="*{costBuy}" oninput="calculateCostBuy()" placeholder="Стоимость покупки за кв.м.">
+
+            </div>
+
+            <p>Стоимость помещения</p>
+            <input type="number" th:field="*{costRoom}" oninput="showOpeningCost()" placeholder="Стоимость помещения" style="border: none; background-color: #ddd; padding: 8px;" readonly>
+            <p>Затраты на материалы для ремонта помещения</p>
+            <input type="number"  th:field="*{costRenovation}" oninput="showOpeningCost()">
+            <p>Оборудование и мебель</p>
+            <input type="number"  th:field="*{costEquipment}" oninput="showOpeningCost()">
+            <p>Лицензии</p>
+            <input type="number"  th:field="*{license}" oninput="showOpeningCost()">
+            <p>Реклама при открытии</p>
+            <input type="number"  th:field="*{abvertising}" oninput="showOpeningCost()">
+            <p>Затраты на рабочих, делающих ремонт</p>
+            <input type="number"  th:field="*{costWorkers}" oninput="showOpeningCost()" >
+            <p>Налоги</p>
+            <input type="number"  th:field="*{taxes}" oninput="showOpeningCost()" >
+            <p>Прочее</p>
+            <input type="number"  th:field="*{other}" oninput="showOpeningCost()" >
+        </div>
+
+        <div class="column"  style="margin-right: 20px">
+            <h1>Расчет потенциальной прибыльности</h1>
+            <br><br><br>
+
+            <p>Средний чек</p>
+
+            <input type="number" th:field="*{averageBill}" oninput="calculateProceed()" placeholder="среднй чек">
+
+            <p>Средняя посещаемость</p>
+
+            <input type="number" th:field="*{averageAttendance}" oninput="calculateProceed()" placeholder="средняя посещаемость в месяц">
+
+            <p>Прогнозируемая выручка в месяц</p>
+
+            <input type="number" th:field="*{futureProceed}"  placeholder="Прогнозируемая выручка в месяц" style="border: none; background-color: #ddd; padding: 8px;" readonly>
+
+            <p>Затраты на персонал</p>
+
+            <input type="number" th:field="*{costsPersonnel}" oninput="showOperating(); showProfit()" >
+
+            <p>Затраты на продукты</p>
+
+            <input type="number" th:field="*{costsProducts}" oninput="showOperating(); showProfit()" >
+
+            <p>Иные затраты(коммуналка, охрана, транспорт и пр.)</p>
+
+            <input type="number" th:field="*{otherCosts}" oninput="showOperating(); showProfit()" >
+        </div>
+
+
+        <div class="column">
+
+            <h1>Расчет времени окупаемости</h1>
+            <br>
+            <br>
+            <br><br>
+            <label for="costOpening">Расходы при открытии</label>
+            <input type="number" th:field="*{costOpening}" placeholder="Расходы при открытии" style="border: none; background-color: #ddd; padding: 8px;" readonly>
+
+            <label for="operating">Операционные расходы</label>
+            <input type="number" th:field="*{operating}" placeholder="Операционные расходы" style="border: none; background-color: #ddd; padding: 8px;" readonly>
+
+            <label for="profit">Прибыльность ресторана в месяц (с учетом аренды)</label>
+            <input type="number" th:field="*{profit}" placeholder="Прибыльность ресторана в месяц (с учетом аренды)" style="border: none; background-color: #ddd; padding: 8px;" readonly>
+        </div>
+    </div>
+    <button type="submit"><strong>Рассчитать</strong></button>
+</form>
+
+
+<script th:inline="javascript">
+    function toggleFields() {
+        var propertyType = document.getElementById('propertyType').value;
+        var rentFields = document.querySelector('.rent-fields');
+        var buyFields = document.querySelector('.buy-fields');
+
+        if (propertyType === 'rent') {
+            rentFields.style.display = 'block';
+            buyFields.style.display = 'none';
+        } else if (propertyType === 'buy') {
+            rentFields.style.display = 'none';
+            buyFields.style.display = 'block';
+        }
+        else if (propertyType === 'a') {
+            rentFields.style.display = 'none';
+            buyFields.style.display = 'none';
+        }
+        else if (propertyType === 'self') {
+            rentFields.style.display = 'none';
+            buyFields.style.display = 'none';
+        }
+    }
+    function calculateCostRent() {
+        var costRent = document.querySelector('input[name=costRent]').value;
+        var periodRenta = document.querySelector('input[name=periodRenta]').value;
+        var costRoom = parseInt(costRent) * parseInt(periodRenta);
+        document.querySelector('input[name=costRoom]').value = costRoom;
+    }
+    function calculateCostBuy() {
+        var roomArea = document.querySelector('input[name=roomArea]').value;
+        var costBuy = document.querySelector('input[name=costBuy]').value;
+        var costRoom = parseInt(roomArea) * parseInt(costBuy);
+        document.querySelector('input[name=costRoom]').value = costRoom;
+    }
+    function calculateProceed() {
+        var averageBill = document.querySelector('input[name=averageBill]').value;
+        var averageAttendance = document.querySelector('input[name=averageAttendance]').value;
+        var futureProceed = parseInt(averageBill) * parseInt(averageAttendance);
+        document.querySelector('input[name=futureProceed]').value = futureProceed;
+    }
+    function showOpeningCost() {
+        var costRoom = document.querySelector('input[name=costRoom]').value;
+        var costRenovation = document.querySelector('input[name=costRenovation]').value;
+        var costEquipment = document.querySelector('input[name=costEquipment]').value;
+        var license = document.querySelector('input[name=license]').value;
+        var abvertising = document.querySelector('input[name=abvertising]').value;
+        var costWorkers = document.querySelector('input[name=costWorkers]').value;
+        var taxes = document.querySelector('input[name=taxes]').value;
+        var other = document.querySelector('input[name=other]').value;
+
+        var costOpening = parseInt(costRoom) + parseInt(costRenovation)+parseInt(costEquipment)+parseInt(license)+parseInt(abvertising)+parseInt(costWorkers)+parseInt(taxes)+parseInt(other);
+        document.querySelector('input[name=costOpening]').value = costOpening;
+    }
+    function showOperating() {
+        var costRent = document.querySelector('input[name=costRent]').value;
+        var costsPersonnel = document.querySelector('input[name=costsPersonnel]').value;
+        var costsProducts = document.querySelector('input[name=costsProducts]').value;
+        var otherCosts = document.querySelector('input[name=otherCosts]').value;
+        var operating = parseInt(costRent)+parseInt(costsPersonnel)+parseInt(costsProducts)+parseInt(otherCosts);
+        document.querySelector('input[name=operating]').value = operating;
+    }
+    function showProfit() {
+        var futureProceed = document.querySelector('input[name=futureProceed]').value;
+        var costsPersonnel = document.querySelector('input[name=costsPersonnel]').value;
+        var costsProducts = document.querySelector('input[name=costsProducts]').value;
+        var otherCosts = document.querySelector('input[name=otherCosts]').value;
+        var costRent = document.querySelector('input[name=costRent]').value;
+        var profit = parseInt(futureProceed)-parseInt(costsPersonnel)-parseInt(costsProducts)-parseInt(otherCosts)-parseInt(costRent);
+        document.querySelector('input[name=profit]').value = profit;
+    }
+
+
+</script>
+
+</body>
+</html>
+
+
+</script>
+
+</body>
+</html>
